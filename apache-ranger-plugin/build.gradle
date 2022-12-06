@@ -4,14 +4,13 @@ import org.apache.tools.zip.Zip64Mode
 apply plugin: 'java'
 apply plugin: 'com.github.johnrengelman.shadow'
 
-
-
 compileJava {
     options.debug = true
 }
 
 shadowJar {
     zip64 true
+    classifier = null
     determineAndSetVersion()
     archiveFileName = "$project.name-${version}.jar"
     exclude "META-INF/*.RSA", "META-INF/*.SF","META-INF/*.DSA"
