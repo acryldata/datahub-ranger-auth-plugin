@@ -22,9 +22,7 @@ dependencies {
         exclude group: "org.apache.htrace", module: "htrace-core4"
     }
     implementation externalDependency.hadoopCommon3
-    implementation externalDependency.slf4jApi
   
-
     constraints {
         implementation(externalDependency.woodstoxCore) {
             because("previous versions are vulnerable to CVE-2022-40151 CVE-2022-40152")
@@ -32,17 +30,15 @@ dependencies {
         implementation(externalDependency.jettyClient) {
             because("previous versions are vulnerable to CVE-2021-28165")
         }
-        implementation(externalDependency.jettison) {
-            because("previous versions are vulnerable to CVE-2022-40149 CVE-2022-40150")
-        }
     }
 
-    compileOnly project(path: ':metadata-auth:auth-api')
+    compileOnly 'io.acryl:datahub-auth-api:0.8.25-SNAPSHOT'
+
     compileOnly externalDependency.lombok
 
     testImplementation externalDependency.mockito
-    testImplementation project(path: ':metadata-utils')
-    testImplementation project(path: ':metadata-auth:auth-api')
+    
+    testImplementation 'io.acryl:datahub-auth-api:0.8.25-SNAPSHOT'
 
     annotationProcessor externalDependency.lombok
 }

@@ -2,9 +2,6 @@ buildscript {
   ext.mavenVersion = '3.6.3'
   ext.testContainersVersion = '1.17.4'
   ext.jacksonVersion = '2.13.4'
-  ext.log4jVersion = '2.19.0'
-  ext.slf4jVersion = '1.7.32'
-  ext.logbackClassic = '1.2.11'
   ext.jettyVersion = '9.4.46.v20220331'
 
   apply from: './repositories.gradle'
@@ -33,11 +30,6 @@ project.ext.externalDependency = [
     'httpClient': 'org.apache.httpcomponents:httpclient:4.5.9',
     'woodstoxCore': 'com.fasterxml.woodstox:woodstox-core:6.4.0',
     'jettyClient': "org.eclipse.jetty:jetty-client:$jettyVersion",
-    'logbackClassic': "ch.qos.logback:logback-classic:$logbackClassic",
-    'slf4jApi': "org.slf4j:slf4j-api:$slf4jVersion",
-    'log4jCore': "org.apache.logging.log4j:log4j-core:$log4jVersion",
-    'log4jApi': "org.apache.logging.log4j:log4j-api:$log4jVersion",
-    'log4j12Api': "org.slf4j:log4j-over-slf4j:$slf4jVersion",
     'lombok': 'org.projectlombok:lombok:1.18.12',
     'mavenArtifact': "org.apache.maven:maven-artifact:$mavenVersion",
     'mockito': 'org.mockito:mockito-core:3.0.0',

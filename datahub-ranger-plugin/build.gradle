@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin: 'signing'
 apply plugin: 'maven-publish'
 apply plugin: 'io.codearte.nexus-staging'
-apply from: '../metadata-integration/java/versioning.gradle'
+apply from: '../buildSrc/versioning.gradle'
 
 
 repositories {
@@ -28,7 +28,6 @@ dependencies {
         exclude group: "org.apache.htrace", module: "htrace-core4"
     }
     implementation externalDependency.hadoopCommon3
-    implementation externalDependency.log4j12Api
 
     constraints {
         implementation(externalDependency.woodstoxCore) {
@@ -36,9 +35,6 @@ dependencies {
         }
         implementation(externalDependency.jettyClient) {
             because("previous versions are vulnerable to CVE-2021-28165")
-        }
-        implementation(externalDependency.jettison) {
-            because("previous versions are vulnerable to CVE-2022-40149 CVE-2022-40150")
         }
     }
 
