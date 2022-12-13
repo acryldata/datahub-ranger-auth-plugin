@@ -4,6 +4,7 @@ import org.apache.tools.zip.Zip64Mode
 apply plugin: 'java'
 apply plugin: 'com.github.johnrengelman.shadow'
 
+
 compileJava {
     options.debug = true
 }
@@ -31,14 +32,15 @@ dependencies {
         }
     }
 
-    compileOnly 'io.acryl:datahub-auth-api:0.8.25-SNAPSHOT'
+    def auth_api = 'io.acryl:datahub-auth-api:0.9.3-3rc3'
+
+    compileOnly "${auth_api}"
 
     compileOnly externalDependency.lombok
 
     testImplementation externalDependency.mockito
+    testImplementation "${auth_api}"
     
-    testImplementation 'io.acryl:datahub-auth-api:0.8.25-SNAPSHOT'
-
     annotationProcessor externalDependency.lombok
 }
 
