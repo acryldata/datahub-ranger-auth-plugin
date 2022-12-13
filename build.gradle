@@ -1,0 +1,105 @@
+buildscript {
+  ext.mavenVersion = '3.6.3'
+  ext.testContainersVersion = '1.17.4'
+  ext.jacksonVersion = '2.13.4'
+  ext.jettyVersion = '9.4.46.v20220331'
+
+  apply from: './repositories.gradle'
+  buildscript.repositories.addAll(project.repositories)
+  dependencies {
+    classpath "com.palantir.gradle.gitversion:gradle-git-version:0.12.3"
+    classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.30.0"
+  }
+}
+
+plugins {
+  id 'com.gorylenko.gradle-git-properties' version '2.4.0-rc2'
+  id 'com.github.johnrengelman.shadow' version '6.1.0'
+}
+
+project.ext.externalDependency = [
+    'commonsCli': 'commons-cli:commons-cli:1.5.0',
+    'commonsIo': 'commons-io:commons-io:2.4',
+    'commonsLang': 'commons-lang:commons-lang:2.6',
+    'commonsText': 'org.apache.commons:commons-text:1.10.0',
+    'commonsCollections': 'commons-collections:commons-collections:3.2.2',
+    'gson': 'com.google.code.gson:gson:2.8.9',
+    'guice': 'com.google.inject:guice:4.2.2',
+    'guava': 'com.google.guava:guava:27.0.1-jre',
+    'hadoopCommon3':'org.apache.hadoop:hadoop-common:3.3.4',
+    'httpClient': 'org.apache.httpcomponents:httpclient:4.5.9',
+    'woodstoxCore': 'com.fasterxml.woodstox:woodstox-core:6.4.0',
+    'jettyClient': "org.eclipse.jetty:jetty-client:$jettyVersion",
+    'lombok': 'org.projectlombok:lombok:1.18.12',
+    'mavenArtifact': "org.apache.maven:maven-artifact:$mavenVersion",
+    'mockito': 'org.mockito:mockito-core:3.0.0',
+    'mockitoInline': 'org.mockito:mockito-inline:3.0.0',
+    'mockServer': 'org.mock-server:mockserver-netty:5.11.2',
+    'mockServerClient': 'org.mock-server:mockserver-client-java:5.11.2',
+    'rangerCommons': 'org.apache.ranger:ranger-plugins-common:2.3.0',
+    'testng': 'org.testng:testng:7.3.0',
+    'testContainers': 'org.testcontainers:testcontainers:' + testContainersVersion,
+    'testContainersJunit': 'org.testcontainers:junit-jupiter:' + testContainersVersion,
+    
+]
+
+allprojects {
+  apply plugin: 'idea'
+  apply plugin: 'eclipse'
+  apply plugin: 'checkstyle'
+}
+
+subprojects {
+
+  apply plugin: 'maven'
+  apply plugin: 'com.gorylenko.gradle-git-properties'
+
+  gitProperties {
+    keys = ['git.commit.id','git.commit.id.describe','git.commit.time']
+    // using any tags (not limited to annotated tags) for "git.commit.id.describe" property
+    // see http://ajoberstar.org/grgit/grgit-describe.html for more info about the describe method and available parameters
+    // 'it' is an instance of org.ajoberstar.grgit.Grgit
+    customProperty 'git.commit.id.describe', { it.describe(tags: true) }
+    failOnNoGitDirectory = false
+  }
+
+  plugins.withType(JavaPlugin) {
+    dependencies {
+      testCompile externalDependency.testng
+      constraints {
+        implementation('io.netty:netty-all:4.1.68.Final')
+        implementation('org.apache.commons:commons-compress:1.21')
+        implementation('org.apache.velocity:velocity-engine-core:2.3')
+        implementation('org.hibernate:hibernate-validator:6.0.20.Final')
+        implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion.2")
+        implementation("com.fasterxml.jackson.core:jackson-dataformat-cbor:$jacksonVersion")
+      }
+    }
+
+    tasks.withType(Test) {
+      if (!name.startsWith('integ')) {
+        useTestNG()
+      }
+    }
+
+    checkstyle {
+      configDirectory = file("${project.rootDir}/gradle/checkstyle")
+      sourceSets = [ getProject().sourceSets.main, getProject().sourceSets.test ]
+      toolVersion = "8.0"
+      maxWarnings = 0
+      ignoreFailures = false
+    }
+  }
+
+  tasks.withType(JavaCompile).configureEach {
+    javaCompiler = javaToolchains.compilerFor {
+      languageVersion = JavaLanguageVersion.of(11)
+    }
+  }
+  tasks.withType(Test).configureEach {
+    javaLauncher = javaToolchains.launcherFor {
+      languageVersion = JavaLanguageVersion.of(11)
+    }
+  }
+
+}
